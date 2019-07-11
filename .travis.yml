@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t vivekbhalala/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true vivekbhalala/react-test npm test
+
+after_success:
+  - docker build -t vivekbhalala/multi-client ./client
+  - docker build -t vivekbhalala/multi-nginx ./nginx
+  - docker build -t vivekbhalala/multi-server ./server
+  - docker build -t vivekbhalala/multi-worker ./worker
+  #Log in to docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push vivekbhalala/multi-client
+  - docker push vivekbhalala/multi-nginx
+  - docker push vivekbhalala/multi-server
+  - docker push vivekbhalala/multi-worker

@@ -5,6 +5,7 @@ services:
 before_install:
   - docker build -t vivekbhalala/react-test -f ./client/Dockerfile.dev ./client
 
+# Running the tests for client before creating docker images for production
 script:
   - docker run -e CI=true vivekbhalala/react-test npm test
 
@@ -20,3 +21,17 @@ after_success:
   - docker push vivekbhalala/multi-nginx
   - docker push vivekbhalala/multi-server
   - docker push vivekbhalala/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-west-2"
+  app: "multi-docker"
+  env: "MultiDocker-env"
+  bucket_name: "elasticbeanstalk-us-west-2-450825242545"
+  bucket_path: "docker-multi"
+  on:
+    branch: master
+  access_key_id:
+    secure: $AWS_ACCESS_KEY
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"

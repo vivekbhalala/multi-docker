@@ -22,7 +22,6 @@ after_success:
   - docker push vivekbhalala/multi-server
   - docker push vivekbhalala/multi-worker
 
-
 deploy:
   provider: elasticbeanstalk
   region: us-west-2
